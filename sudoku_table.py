@@ -10,7 +10,7 @@ def sudoku_table(file):
         new_file.append(line)
     return new_file
 
-def check_true(sudoku):
+def valid_content(sudoku):
     column =  len(sudoku)
     for i in sudoku:
         if len(i) != column:
@@ -18,4 +18,21 @@ def check_true(sudoku):
         for j in i:
             if not j.isdigit() and j != "x":
                 return False
+    return True
+
+def solved(sudoku):
+    correct = []
+    for i in range(len(sudoku)):
+        correct.append(str(i))
+    for i in range(len(sudoku)):
+        line = sudoku[i]
+        line.sort()
+        if line != correct:
+            return False
+    for i in range(len(sudoku)):
+        column = []
+        for j in range(len(sudoku)):
+            column.append(str(sudoku[i][j]))
+        if column != correct:
+            return False
     return True
