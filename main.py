@@ -2,7 +2,7 @@
 def clear_linebreaks(text):
     # Check if the line finished with a line breaker
     if text.endswith('\n'):
-            # Delete the line breaker
+        # Delete the line breaker
         text = text[:-1]
     # Return the value without line breakers
     return text
@@ -58,30 +58,75 @@ def sort_sudoku(number):
         # Check each number 
         for numbers in range(number):
             # Add the number in the list
-            line.append(numbers)
+            line.append(str(numbers))
         # Add the line in the sudoku
         sorted_sudoku.append(line)
     # Return the sorted sudoku
     return sorted_sudoku
 
-sort_sudoku(9)
-
 # Check if the submitted sudoku respect the rules
 def solved(sudoku):
+    # Create a variable for the test
+    test_sudoku = []
     # Create the variable containing the sorted sudoku
     sorted_sudoku = sort_sudoku(len(sudoku))
     # Check each line of the sudoku
     for line in sudoku:
-        # Sort the current line
-        line = line.sort()
+        # Sort the current line and add it to the sudoku's test variable
+        test_sudoku.append(sorted(line))
     # If the new sudoku isn't the same as the sorted one
-    if sudoku != sorted_sudoku:
+    if test_sudoku != sorted_sudoku:
         # Return false
         return False
     # If the new sudoku is the same as the sorted one
     else:
         # Return true
         return True
+    
+# Summarizing all the numbers missing
+def missings(sudoku):
+    # Create a variable containing the amount of missing numbers in each line
+    lines = []
+    # Check each line
+    for line in sudoku :
+        # Create a variable to count the missing numbers
+        missing = 0 
+        # Check each number :
+        for number in range(len(line)):
+            # Check if the number isn't in the list
+            if str(number) not in line:
+                # Add one to the missing numbers
+                missing = missing + 1
+        # Add the amount of missing numbers in the list for its respectively line
+        lines.append(missing)
+    # Create a variable containing the amount of missing numbers in each columns
+    columns = []
+    # Return amount of missing numbers in lines and columns
+    return lines, columns
+
+# Try to replace the missing ones
+def add_missing(list):
+    # Check each number
+    for i in range(len(list)):
+        # If the nummber is not in the list
+        if str(i) not in list:
+            # Find the place of the missing number
+            place = list.index('x')
+            # Replace it with the right number
+            list[place] = str(i)
+    # Return the new list
+    return list
+
+# Finding the good values for missing numbers
+def find(lines, columns, sudoku):
+    # Check if on line misses one number
+    if 1 in lines:
+        # Find the index of the missing one
+        line = lines.index(1)
+        # Replace the line with the good answer
+        sudoku[line] = add_missing(sudoku[line])
+    # Return the sudoku
+    return sudoku
 
 # Open the text file and get the sudoku from it
 with open("sudoku.txt", "r") as f:
@@ -92,7 +137,18 @@ with open("sudoku.txt", "r") as f:
 if valid_content(sudoku):
     # Analysing the sudoku submitted
     print("Analysing...")
-    print(solved(sudoku))
+    # Create a variable containing the boolean value of sudoku if he is solved
+    valid = False
+    # While the sudoku isn't solve
+    while valid == False:
+        # Summarizing all the numbers missing
+        missing_lines, missing_columns = missings(sudoku)
+        # Finding the good values for missing numbers
+        find(missing_lines, missing_columns, sudoku)
+        # Retest the sudoku to know if he's solved
+        valid = solved(sudoku)
+    # Print the answer of this sudoku
+    print("The answer for this sudoku is : \n", sudoku)
 else: 
     # Say that the sudoku isn't in a good format
     print("Le sudoku isn't in a good format")
