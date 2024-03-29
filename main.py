@@ -101,6 +101,24 @@ def missings(sudoku):
         lines.append(missing)
     # Create a variable containing the amount of missing numbers in each columns
     columns = []
+    # Check each column in the sudoku
+    for column in range(len(sudoku)):
+        # Create an variable to stock the current column
+        current_column = []
+        # Check each line of the sudoku
+        for line in sudoku:
+            # Add the number which is the intersection of current line and current column to the column
+            current_column.append(line[column])
+        # Create a variable containing the amount of missing numbers
+        missing = 0 
+        # Check each number :
+        for number in range(len(sudoku)):
+            # Check if the number isn't in the list
+            if str(number) not in current_column:
+                # Add one to the missing numbers
+                missing = missing + 1
+        # Add the amount of missing numbers in the list for its respectively line
+        columns.append(missing)
     # Return amount of missing numbers in lines and columns
     return lines, columns
 
@@ -117,6 +135,28 @@ def add_missing(list):
     # Return the new list
     return list
 
+# Get the value of the column
+def get_column(column, sudoku):
+    # Create a variable for the column value
+    column_list = []
+    # Check each line in the sudoku
+    for line in sudoku:
+        # Add the intersection of the line and column to the value of the column
+        column_list.append(line[column])
+    # Return the value of the column
+    return column_list
+
+# Replace the column with its right value
+def replace_column(column, missing_column, sudoku):
+    # Get the previous column
+    bad_one = get_column(column, sudoku)
+    # For each line in the column
+    for line in range(len(bad_one)):
+        # Replace the bad value with the good value in the sudoku
+        sudoku[line][column] = missing_column[line]
+    # Return the new value of the sudoku
+    return sudoku
+
 # Finding the good values for missing numbers
 def find(lines, columns, sudoku):
     # Check if on line misses one number
@@ -125,6 +165,14 @@ def find(lines, columns, sudoku):
         line = lines.index(1)
         # Replace the line with the good answer
         sudoku[line] = add_missing(sudoku[line])
+    # Check if on column misses one number
+    elif 1 in columns:
+        # Find the index of the missing one
+        column = columns.index(1)
+        # Get the column's value
+        column_value = get_column(column, sudoku)
+        # Replace the column with the good answer
+        sudoku = replace_column(column, add_missing(column_value), sudoku)
     # Return the sudoku
     return sudoku
 
@@ -148,7 +196,7 @@ if valid_content(sudoku):
         # Retest the sudoku to know if he's solved
         valid = solved(sudoku)
     # Print the answer of this sudoku
-    print("The answer for this sudoku is : \n", sudoku)
+    print("The answer for this sudoku is :", *sudoku, sep='\n')
 else: 
     # Say that the sudoku isn't in a good format
     print("Le sudoku isn't in a good format")
